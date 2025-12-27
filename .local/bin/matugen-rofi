@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Se il primo argomento è "image", il wallpaper è il secondo
+if [[ "$1" == "image" ]]; then
+    WALLPAPER="$(realpath "$2")"
+else
+    WALLPAPER="$(realpath "$1")"
+fi
+
+# Esegui matugen
+matugen image "$WALLPAPER"
+
+# Aspetta che swww finisca
+sleep 0.3
+
+# Aggiorna il link al wallpaper
+ln -sf "$WALLPAPER" "$HOME/.config/hypr/current_wallpaper"
+
+# Chiudi rofi se è aperto (si riaprirà con il wallpaper nuovo)
+pkill rofi 2>/dev/null || true

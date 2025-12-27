@@ -1,0 +1,96 @@
+#!/bin/bash
+WALLPAPER_DIR="$HOME/Pictures/wallpapers"
+CACHE_DIR="$HOME/.cache/wallpaper-selector"
+ROFI_CONFIG="$HOME/.config/rofi/wallpaper-selector.rasi"
+
+# Verify that the directory exists
+if [[ ! -d "$WALLPAPER_DIR" ]]; then
+    notify-send "Error" "Directory $WALLPAPER_DIR not found"
+    exit 1
+fi
+
+# Create cache directory
+mkdir -p "$CACHE_DIR"
+
+# Function to generate thumbnails
+generate_thumbnails() {
+    cd "$WALLPAPER_DIR" || exit 1
+    
+    shopt -s nullglob
+    for img in *.jpg *.jpeg *.png *.webp *.gif; do
+        [[ -f "$img" ]] || continue
+        
+        thumb="$CACHE_DIR/${img%.*}.png"
+        
+        # Generate thumbnail if it doesn't exist or is older than the original
+        if [[ ! -f "$thumb" ]] || [[ "$img" -nt "$thumb" ]]; then
+            # For GIFs, take the first frame
+            if [[ "${img##*.}" == "gif" ]]; then
+                convert "$img[0]" -resize 300x300^ -gravity center -extent 300x300 "$thumb" 2>/dev/null
+            else
+                convert "$img" -resize 300x300^ -gravity center -extent 300x300 "$thumb" 2>/dev/null
+            fi
+        fi
+    done
+    shopt -u nullglob
+}
+
+# Generate thumbnails in background
+generate_thumbnails &
+wait
+
+# Create list with icons for rofi
+cd "$WALLPAPER_DIR" || exit 1
+WALLPAPERS=()
+shopt -s nullglob
+for img in *.jpg *.jpeg *.png *.webp *.gif; do
+    [[ -f "$img" ]] || continue
+    name="${img%.*}"
+    thumb="$CACHE_DIR/${name}.png"
+    
+    # Use thumbnail if it exists, otherwise use the original image
+    if [[ -f "$thumb" ]]; then
+        WALLPAPERS+=("${name}\0icon\x1f${thumb}")
+    else
+        WALLPAPERS+=("${name}\0icon\x1f${WALLPAPER_DIR}/${img}")
+    fi
+done
+shopt -u nullglob
+
+# Show rofi with icons
+SELECTED=$(printf '%b\n' "${WALLPAPERS[@]}" | \
+    rofi -dmenu -i \
+    -p "󰸉 Select Wallpaper" \
+    -theme "$ROFI_CONFIG" \
+    -selected-row 0)
+
+# Apply selected wallpaper
+if [[ -n "$SELECTED" ]]; then
+    (
+        shopt -s nullglob
+        for img in "$WALLPAPER_DIR"/*.jpg "$WALLPAPER_DIR"/*.jpeg "$WALLPAPER_DIR"/*.png "$WALLPAPER_DIR"/*.webp "$WALLPAPER_DIR"/*.gif; do
+            [[ -f "$img" ]] || continue
+            if [[ "$(basename "${img%.*}")" == "$SELECTED" ]]; then
+                # Get thumbnail path
+                THUMB="$CACHE_DIR/${SELECTED}.png"
+                
+                # Use thumbnail if it exists, otherwise use the original image
+                if [[ -f "$THUMB" ]]; then
+                    PREVIEW_IMG="$THUMB"
+                else
+                    PREVIEW_IMG="$img"
+                fi
+                
+                # Notification with image preview
+                notify-send "󰸉  Applying wallpaper..." "$(basename "$img")" -i "$PREVIEW_IMG"
+                
+                # Apply wallpaper with matugen
+                ~/.local/bin/matugen-rofi image "$img"
+                
+                # Final notification with preview
+                notify-send "󰸉  Wallpaper Changed" "$(basename "$img")" -i "$PREVIEW_IMG"
+                break
+            fi
+        done
+    )
+fi

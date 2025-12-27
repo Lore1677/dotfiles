@@ -1,0 +1,61 @@
+* {
+    background-image: none;
+    font-size: 20px;
+    font-family: "JetBrains Mono NFM";
+}
+
+@import '../../.config/waybar/colors.css';
+
+window {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+button {
+    border-radius: 20px;
+    margin: 10px;
+    color: @inverse_surface;
+    border: 1px solid alpha(@primary, 0.4);
+    background-color: alpha(@primary_container, 0.3);
+    outline-style: none;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20%;
+    box-shadow: none;
+    text-shadow: none;
+    animation: gradient_f 20s ease-in infinite;
+}
+
+button:hover {
+    background-color: @on_secondary_fixed_variant;
+    background-size: 30%;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55, 0.0, .28, 1.682);
+}
+
+button span {
+    font-size: 1.2em;
+}
+#lock {
+    background-image: image(url("./icons/lock.png"));
+}
+
+#logout {
+    background-image: image(url("./icons/logout.png"));
+}
+
+#suspend {
+    background-image: image(url("./icons/sleep.png"));
+}
+
+#shutdown {
+    background-image: image(url("./icons/power.png"));
+}
+
+#reboot {
+    background-image: image(url("./icons/restart.png"));
+}
+#dummy {
+    background-color: transparent;
+    background-image: image(url("./icons/exit.png"));
+    border: none;
+}

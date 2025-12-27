@@ -1,0 +1,214 @@
+@import "colors.css";
+
+* {
+    border: none;
+    font-family: "SF Pro Display", "JetBrainsMono Nerd Font";
+    font-size: 14px;
+    transition: all 80ms ease;
+}
+
+window#waybar {
+    background: transparent;
+    color: @on_surface;
+}
+
+tooltip {
+    background: alpha(@surface_container_high, 0.95);
+    border: 1px solid alpha(@outline_variant, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px alpha(@shadow, 0.3);
+}
+
+tooltip label {
+    color: @on_surface;
+}
+
+/* Workspaces minimalisti */
+#workspaces {
+    margin: 0 10px;
+    background: alpha(@surface_container, 0.6);
+    border-radius: 12px;
+    padding: 3px 6px;
+    border: 1px solid alpha(@outline_variant, 0.2);
+}
+
+#workspaces button {
+    background: transparent;
+    padding: 2px 10px;
+    margin: 0 2px;
+    border-radius: 8px;
+    color: @on_surface_variant;
+    transition: all 80ms ease;
+    outline: none;
+    box-shadow: none;
+    text-shadow: none;
+    border: none;
+}
+
+#workspaces button label {
+    text-shadow: none;
+}
+
+#workspaces button.active {
+    background: alpha(@primary, 0.85);
+    color: @on_primary;
+    padding: 2px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+#workspaces button.urgent {
+    background: alpha(@error, 0.7);
+    color: @on_error;
+}
+
+#workspaces button:not(.active):hover {
+    background: alpha(@surface_container_highest, 0.85);
+    color: @on_surface;
+    outline: none;
+    box-shadow: none;
+}
+
+/* Moduli base */
+#clock,
+#pulseaudio,
+#network,
+#custom-pacman,
+#custom-power,
+#custom-weather {
+    background: alpha(@surface_container_high, 0.7);
+    border-radius: 10px;
+    padding: 3px 14px;
+    margin: 0 3px;
+    border: 1px solid alpha(@outline_variant, 0.25);
+    color: @on_surface;
+    transition: all 80ms ease;
+}
+
+#custom-pacman {
+    padding: 0 10px;
+}
+
+#custom-spotify,
+#custom-spotify-prev,
+#custom-spotify-next {
+    background: alpha(@surface_container_high, 0.7);
+    border-radius: 10px;
+    padding: 3px 14px;
+    margin: 0 2px;
+    border: 1px solid alpha(@outline_variant, 0.25);
+    color: @on_surface;
+}
+
+#custom-spotify-prev {
+    margin-left: 50px;
+}
+
+#network {
+    padding: 3px 12px;
+    font-weight: 500;
+    min-width: 16px;
+}
+
+/* Orologio con larghezza fissa */
+#clock {
+    padding: 3px 12px;
+    font-weight: 500;
+    min-width: 85px;
+    background: alpha(@primary_container, 0.6);
+    color: @primary_fixed_dim;
+    border: 1px solid alpha(@primary, 0.4);
+}
+
+/* Meteo */
+#custom-weather {
+    padding: 3px 12px;
+    background: alpha(@surface_container_high, 0.7);
+    color: @on_surface;
+    border: 1px solid alpha(@outline_variant, 0.25);
+}
+
+#window {
+    margin: 0 5px;
+    padding: 3px 14px;
+    background: alpha(@surface_container, 0.5);
+    border-radius: 10px;
+    border: 1px solid alpha(@outline_variant, 0.2);
+    color: @on_surface_variant;
+}
+
+/* Hover minimalista */
+#custom-pacman:hover,
+#pulseaudio:hover,
+#network:hover,
+#bluetooth:hover,
+#tray:hover,
+#custom-spotify:hover,
+#custom-spotify-prev:hover,
+#custom-spotify-next:hover,
+#custom-weather:hover{
+    background: alpha(@secondary_container, 0.7);
+    border: 1px solid alpha(@secondary, 0.5);
+}
+
+#clock:hover {
+    background: alpha(@primary_container, 0.8);
+    border: 1px solid alpha(@primary, 0.35);
+}
+
+/* Power button */
+#custom-power {
+    background: alpha(@surface_container_high, 0.7);
+    color: @error;
+    font-size: 15px;
+    padding: 3px 11px;
+}
+
+#custom-power:hover {
+    background: alpha(@error_container, 0.5);
+    border: 1px solid alpha(@error, 0.3);
+}
+
+/* Stati network */
+#network.disconnected {
+    color: @error;
+}
+
+/* Pulseaudio muted */
+#pulseaudio.muted {
+    color: @outline;
+}
+
+#pulseaudio {
+    padding-left: 8px;
+    padding-right: 14px;
+}
+
+/* Modulo notifiche swaync */
+#custom-swaync {
+    background: alpha(@surface_container_high, 0.7);
+    border-radius: 10px;
+    padding: 3px 6px 3px 12px;
+    margin: 0 3px;
+    border: 1px solid alpha(@outline_variant, 0.25);
+    color: @on_surface;
+    transition: all 80ms ease;
+}
+
+#custom-swaync:hover {
+    background: alpha(@secondary_container, 0.7);
+    border: 1px solid alpha(@secondary, 0.5);
+}
+
+/* Stato con notifiche */
+#custom-swaync.notification {
+    background: alpha(@tertiary_container, 0.6);
+    border: 1px solid alpha(@tertiary, 0.4);
+    color: @on_tertiary_container;
+}
+
+#custom-swaync.notification:hover {
+    background: alpha(@tertiary_container, 0.8);
+    border: 1px solid alpha(@tertiary, 0.5);
+}
+

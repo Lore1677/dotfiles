@@ -1,0 +1,70 @@
+#!/bin/bash
+
+WALLPAPER_DIR="$HOME/Pictures/wallpapers"
+CACHE_DIR="$HOME/.cache/wallpaper-selector"
+ROFI_CONFIG="$HOME/.config/rofi/wallpaper-selector.rasi"
+
+# Check that the directory exists
+if [[ ! -d "$WALLPAPER_DIR" ]]; then
+    notify-send "Error" "Directory $WALLPAPER_DIR not found"
+    exit 1
+fi
+
+# Create cache directory
+mkdir -p "$CACHE_DIR"
+
+# Function to generate thumbnails
+generate_thumbnails() {
+    cd "$WALLPAPER_DIR" || exit 1
+    
+    for img in *.{jpg,jpeg,png,webp} 2>/dev/null; do
+        [[ -f "$img" ]] || continue
+        
+        thumb="$CACHE_DIR/${img%.*}.png"
+        
+        # Generate thumbnail if it doesn't exist or is older than the original
+        if [[ ! -f "$thumb" ]] || [[ "$img" -nt "$thumb" ]]; then
+            convert "$img" -resize 300x300^ -gravity center -extent 300x300 "$thumb" 2>/dev/null
+        fi
+    done
+}
+
+# Generate thumbnails in background
+generate_thumbnails &
+
+# Create the list with icons for rofi
+cd "$WALLPAPER_DIR" || exit 1
+
+WALLPAPERS=()
+for img in *.{jpg,jpeg,png,webp} 2>/dev/null; do
+    [[ -f "$img" ]] || continue
+    name="${img%.*}"
+    thumb="$CACHE_DIR/${name}.png"
+    
+    # Use thumbnail if it exists, otherwise use the original image
+    if [[ -f "$thumb" ]]; then
+        WALLPAPERS+=("${name}\0icon\x1f${thumb}")
+    else
+        WALLPAPERS+=("${name}\0icon\x1f${WALLPAPER_DIR}/${img}")
+    fi
+done
+
+# Show rofi with icons
+SELECTED=$(printf '%b\n' "${WALLPAPERS[@]}" | \
+    rofi -dmenu -i \
+    -p "󰸉 Select Wallpaper" \
+    -theme "$ROFI_CONFIG" \
+    -selected-row 0)
+
+# Apply the selected wallpaper
+if [[ -n "$SELECTED" ]]; then
+    # Find the corresponding file
+    for img in *.{jpg,jpeg,png,webp} 2>/dev/null; do
+        if [[ "${img%.*}" == "$SELECTED" ]]; then
+            notify-send "󰸉 Applying wallpaper..." "$img"
+            matugen-rofi image "$WALLPAPER_DIR/$img"
+            notify-send "󰸉 Wallpaper Changed" "$img"
+            break
+        fi
+    done
+fi
